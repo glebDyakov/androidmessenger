@@ -1,11 +1,14 @@
 package com.example.messenger;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -63,5 +66,23 @@ public class Info  extends AppCompatActivity {
 
         }
 
+        ImageButton imgPickBtn = findViewById(R.id.imgPickBtn);
+        imgPickBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("file/*");
+                startActivityForResult(intent, 8778);
+            }
+        });
+
     }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        String Fpath = data.getDataString();
+        Log.d("mytag", "Путь до картинки: " + Fpath);
+        super.onActivityResult(requestCode, resultCode, data);
+
+    }
+
 }
