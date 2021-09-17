@@ -5,6 +5,45 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <EditText
+        android:id="@+id/searchName"
+        android:layout_width="369dp"
+        android:layout_height="72dp"
+        android:backgroundTint="#FD1414"
+        android:contentDescription="keywords"
+        android:ems="10"
+        android:foregroundTint="#0F76E4"
+        android:hint="@string/searchNamePlaceholder"
+        android:importantForAutofill="no"
+        android:inputType="textPersonName"
+        android:text="@string/searchNamePlaceholder"
+        android:textColorHint="#121111"
+        android:translationX="0dp"
+        android:translationY="200dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        tools:ignore="TouchTargetSizeCheck,EditableContentDescCheck"
+        tools:visibility="visible" />
+
+    <ImageButton
+        android:id="@+id/searchBtn"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:contentDescription="searchBtn"
+        android:scaleType="fitStart"
+        android:translationX="165dp"
+        android:translationY="-135dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/camera"
+        tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
+
     <ScrollView
         android:id="@+id/scrollOfContacts"
         android:layout_width="438dp"
@@ -24,37 +63,4 @@
             android:layout_height="wrap_content"
             android:orientation="vertical" />
     </ScrollView>
-
-    <ImageButton
-        android:id="@+id/searchBtn"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:scaleType="fitStart"
-        android:translationX="175dp"
-        android:translationY="-135dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/camera"
-        tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
-
-    <EditText
-        android:id="@+id/searchName"
-        android:layout_width="325dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="275dp"
-        android:layout_marginBottom="686dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Введите имя..."
-        android:translationX="0dp"
-        android:translationY="200dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
-        tools:ignore="TouchTargetSizeCheck" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -20,12 +20,17 @@ import java.util.HashMap;
 public class Search extends AppCompatActivity {
 
 //    public ArrayList<HashMap<String, Object>> contacts = new ArrayList<HashMap<String, Object>>();
+    public String contactId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
+        Bundle extras = getIntent().getExtras();
+        if(extras != null) {
+            contactId = extras.getString("contactId");
+        }
 //        HashMap<String, Object> contactOne = new HashMap<String, Object>();
 //        contactOne.put("id", "1");
 //        contactOne.put("name", "Роман Сакутин");
@@ -45,7 +50,7 @@ public class Search extends AppCompatActivity {
 //        contactThree.put("avatar", "camera");
 //        contacts.add(contactThree);
 
-        refreshContent("");
+//        refreshContent("");
 
         ImageButton searchBtn = findViewById(R.id.searchBtn);
         searchBtn.setOnClickListener(new View.OnClickListener() {
@@ -101,7 +106,8 @@ public class Search extends AppCompatActivity {
                         @Override
                         public void onClick(View v) {
                             Intent intent = new Intent(Search.this, Chat.class);
-                            intent.putExtra("contactId", contactLayout.getContentDescription());
+                            intent.putExtra("contactId", contactId);
+                            intent.putExtra("otherContactId", contactLayout.getContentDescription());
                             Search.this.startActivity(intent);
                         }
                     });

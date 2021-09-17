@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -56,9 +57,13 @@ public class MainActivity extends AppCompatActivity {
 //        contacts.add(contactThree);
 
 //        contacts.clear();
+
+        @SuppressLint("WrongConstant") SQLiteDatabase db = openOrCreateDatabase("contactio.db", SQLiteDatabase.CREATE_IF_NECESSARY, null);
+        Cursor currentSocket = db.rawQuery("Select * from sockets", null);
+        currentSocket.moveToFirst();
+
         String url = "https://messengerserv.herokuapp.com/contacts/list";
         JSONArray responseJson = null;
-
         try {
             responseJson = new FetchTask<JSONArray>().execute(url).get();
             for (int i = 0; i < responseJson.length(); i++){
@@ -69,16 +74,25 @@ public class MainActivity extends AppCompatActivity {
 
                 ImageButton currentContactAvatar = new ImageButton(MainActivity.this);
                 currentContactAvatar.setLayoutParams(new ConstraintLayout.LayoutParams(115, 115));
-                if(avatar.toString().contains("five")){
-                    currentContactAvatar.setImageResource(R.drawable.five);
-                } else if(avatar.toString().contains("barcode")){
-                    currentContactAvatar.setImageResource(R.drawable.barcode);
-                } else if(avatar.toString().contains("magnet")){
-                    currentContactAvatar.setImageResource(R.drawable.magnet);
-                } else if(avatar.toString().contains("camera")){
-                    currentContactAvatar.setImageResource(R.drawable.camera);
-                } else if(avatar.toString().contains("cross")){
-                    currentContactAvatar.setImageResource(R.drawable.cross);
+//                if(avatar.toString().contains("five")){
+//                    currentContactAvatar.setImageResource(R.drawable.five);
+//                } else if(avatar.toString().contains("barcode")){
+//                    currentContactAvatar.setImageResource(R.drawable.barcode);
+//                } else if(avatar.toString().contains("magnet")){
+//                    currentContactAvatar.setImageResource(R.drawable.magnet);
+//                } else if(avatar.toString().contains("camera")){
+//                    currentContactAvatar.setImageResource(R.drawable.camera);
+//                } else if(avatar.toString().contains("cross")){
+//                    currentContactAvatar.setImageResource(R.drawable.cross);
+//                }
+
+                try {
+                    Uri uploadedImg = new FetchTask<Uri>().execute("https://opalescent-soapy-baseball.glitch.me/contacts/getavatar/?contactid=1&path=abc", "contacts").get();
+//                    currentContactAvatar.setImageURI(Uri.parse("https://opalescent-soapy-baseball.glitch.me/contacts/getavatar/?contactid=1&path=abc"));
+                    currentContactAvatar.setImageURI(uploadedImg);
+
+                } catch (Exception e) {
+
                 }
                 TextView currentContactName = new TextView(MainActivity.this);
                 currentContactName.setText(name.toString());
@@ -96,7 +110,9 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(MainActivity.this, Chat.class);
-                        intent.putExtra("contactId", contactLayout.getContentDescription());
+                        intent.putExtra("otherContactId", contactLayout.getContentDescription());
+//                        intent.putExtra("contactId", currentSocket.getString(3));
+                        intent.putExtra("contactId", currentSocket.getString(4));
                         MainActivity.this.startActivity(intent);
                     }
                 });
@@ -104,7 +120,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(MainActivity.this, Info.class);
-                        intent.putExtra("contactId", contactLayout.getContentDescription());
+                        intent.putExtra("otherContactId", contactLayout.getContentDescription());
+                        intent.putExtra("contactId", currentSocket.getString(3));
                         MainActivity.this.startActivity(intent);
                     }
                 });
@@ -178,6 +195,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, Search.class);
+                intent.putExtra("contactId", currentSocket.getString(3));
                 MainActivity.this.startActivity(intent);
             }
         });
