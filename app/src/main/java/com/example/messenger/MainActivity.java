@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -87,9 +88,14 @@ public class MainActivity extends AppCompatActivity {
 //                }
 
                 try {
-                    Uri uploadedImg = new FetchTask<Uri>().execute("https://opalescent-soapy-baseball.glitch.me/contacts/getavatar/?contactid=1&path=abc", "contacts").get();
+
+//                    Uri uploadedImg = new FetchTask<Uri>().execute("https://opalescent-soapy-baseball.glitch.me/contacts/getavatar/?contactid=1&path=abc", "avatar").get();
+                    Bitmap uploadedImg = new FetchTask<Bitmap>(currentContactAvatar).execute("https://opalescent-soapy-baseball.glitch.me/contacts/getavatar/?contactid=1&path=abc").get();
+
+
 //                    currentContactAvatar.setImageURI(Uri.parse("https://opalescent-soapy-baseball.glitch.me/contacts/getavatar/?contactid=1&path=abc"));
-                    currentContactAvatar.setImageURI(uploadedImg);
+//                    currentContactAvatar.setImageURI(uploadedImg);
+                    currentContactAvatar.setImageBitmap(uploadedImg);
 
                 } catch (Exception e) {
 

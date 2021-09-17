@@ -1,16 +1,31 @@
 package com.example.messenger;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.ImageView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.InputStream;
 import java.net.URL;
 
 public class FetchTask<ResponseType> extends AsyncTask<String, Integer, ResponseType> {
+
+    public ImageView bmImage;
+
+    public FetchTask() {
+
+    }
+
+    public FetchTask(ImageView bmImage) {
+        this.bmImage = bmImage;
+    }
+
     @Override
     protected ResponseType doInBackground(String... url) {
         String responseJson = "";
@@ -27,7 +42,19 @@ public class FetchTask<ResponseType> extends AsyncTask<String, Integer, Response
             } catch(JSONException e) {
                 Log.d("mytag", "ошибка парсинга json");
             }
-        } else if(url[0].contains("/contacts/get") && url[1].contains("contacts")){
+        } else if(url[0].contains("/contacts/getavatar")){
+            try {
+
+//                transferJson = (ResponseType) Uri.parse("https://opalescent-soapy-baseball.glitch.me/contacts/getavatar/?contactid=1&path=abc");
+
+                InputStream in = new java.net.URL(url[0]).openStream();
+                transferJson = (ResponseType) BitmapFactory.decodeStream(in);
+
+            } catch(Exception e) {
+                Log.d("mytag", "ошибка запроса: " + e);
+            }
+
+        } else if(url[0].contains("/contacts/get")){
             try {
                 responseJson = UrlFetcher.getText(url[0]);
                 Log.d("mytag", "ответ запроса: " + responseJson);
@@ -41,13 +68,6 @@ public class FetchTask<ResponseType> extends AsyncTask<String, Integer, Response
             } catch(JSONException e) {
                 Log.d("mytag", "ошибка парсинга json");
             }
-        } else if(url[0].contains("/contacts/getavatar")){
-            try {
-                transferJson = (ResponseType) Uri.parse("https://opalescent-soapy-baseball.glitch.me/contacts/getavatar/?contactid=1&path=abc");
-            } catch(Exception e) {
-                Log.d("mytag", "ошибка запроса: " + e);
-            }
-
         } else if(url[0].contains("/contacts/create")){
             try {
                 responseJson = UrlFetcher.getText(url[0]);
@@ -75,7 +95,7 @@ public class FetchTask<ResponseType> extends AsyncTask<String, Integer, Response
             } catch (JSONException e) {
                 Log.d("mytag", "ошибка парсинга json, url: " + url[0]);
             }
-        } else if(url[0].contains("/contacts/get") && url[1].contains("messages")) {
+        } else if(url[0].contains("/contacts/get")) {
             try {
                 responseJson = UrlFetcher.getText(url[0]);
             } catch (Exception e) {
@@ -91,4 +111,11 @@ public class FetchTask<ResponseType> extends AsyncTask<String, Integer, Response
 
         return transferJson;
     }
+
+    protected void onPostExecute(ResponseType result) {
+        if(result instanceof Bitmap){
+            bmImage.setImageBitmap((Bitmap) result);
+        }
+    }
+
 }

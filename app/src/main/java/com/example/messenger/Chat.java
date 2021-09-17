@@ -120,7 +120,8 @@ public class Chat  extends AppCompatActivity {
 //            JSONObject responseJson = new FetchTask<JSONObject>().execute(url).get();
 
 //            JSONArray messagesJson = responseJson.getJSONArray("messages");
-            JSONArray messagesJson = new FetchTask<JSONArray>().execute(url, "messages").get();
+//            JSONArray messagesJson = new FetchTask<JSONArray>().execute(url, "messages").get();
+            JSONArray messagesJson = new FetchTask<JSONArray>().execute(url).get();
 
             for(int i = 0; i < messagesJson.length(); i++){
 

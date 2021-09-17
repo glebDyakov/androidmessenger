@@ -1,6 +1,7 @@
 package com.example.messenger;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -79,6 +80,9 @@ public class Search extends AppCompatActivity {
                 String id = responseJson.getJSONObject(i).getString("_id");
                 if (name.toString().contains(keywords)) {
                     ImageButton currentContactAvatar = new ImageButton(Search.this);
+
+                    Bitmap uploadedImg = new FetchTask<Bitmap>(currentContactAvatar).execute("https://opalescent-soapy-baseball.glitch.me/contacts/getavatar/?contactid=1&path=abc").get();
+
                     currentContactAvatar.setLayoutParams(new ConstraintLayout.LayoutParams(115, 115));
                     if (avatar.toString().contains("five")) {
                         currentContactAvatar.setImageResource(R.drawable.five);
