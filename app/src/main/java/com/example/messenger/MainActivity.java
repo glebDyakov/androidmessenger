@@ -63,6 +63,17 @@ public class MainActivity extends AppCompatActivity {
         Cursor currentSocket = db.rawQuery("Select * from sockets", null);
         currentSocket.moveToFirst();
 
+        Button info = findViewById(R.id.info);
+        info.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, Info.class);
+                intent.putExtra("contactId", currentSocket.getString(4));
+                intent.putExtra("otherContactId", currentSocket.getString(4));
+                MainActivity.this.startActivity(intent);
+            }
+        });
+
         String url = "https://messengerserv.herokuapp.com/contacts/list";
         JSONArray responseJson = null;
         try {
@@ -127,7 +138,10 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(View v) {
                         Intent intent = new Intent(MainActivity.this, Info.class);
                         intent.putExtra("otherContactId", contactLayout.getContentDescription());
-                        intent.putExtra("contactId", currentSocket.getString(3));
+
+//                        intent.putExtra("contactId", currentSocket.getString(3));
+                        intent.putExtra("contactId", currentSocket.getString(4));
+
                         MainActivity.this.startActivity(intent);
                     }
                 });

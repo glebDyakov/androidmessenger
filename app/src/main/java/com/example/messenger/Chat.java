@@ -79,7 +79,8 @@ public class Chat  extends AppCompatActivity {
 //                Log.d("mytag", "Этот контакт уже прикреплён");
 //            }
 
-            messageText.setText(contactId);
+//            messageText.setText(contactId);
+
             Log.d("mytag", "otherContactId: " + otherContactId);
         }
 
@@ -121,24 +122,30 @@ public class Chat  extends AppCompatActivity {
 
 //            JSONArray messagesJson = responseJson.getJSONArray("messages");
 //            JSONArray messagesJson = new FetchTask<JSONArray>().execute(url, "messages").get();
-            JSONArray messagesJson = new FetchTask<JSONArray>().execute(url).get();
+
+            JSONArray messagesJson = new FetchTask<JSONObject>().execute(url).get().getJSONArray("messages");
+//            JSONArray messagesJson = new FetchTask<JSONArray>().execute(url).get();
 
             for(int i = 0; i < messagesJson.length(); i++){
 
                 String text = messagesJson.getJSONObject(i).getString("message");
                 String messageId = messagesJson.getJSONObject(i).getString("id");
+                String otherMessageId = messagesJson.getJSONObject(i).getString("otherMessageId");
 
-                Button messageBtn = new Button(Chat.this);
-                LinearLayout contactMessage = new LinearLayout(Chat.this);
-                messageBtn.setText(text);
-                LinearLayout layoutOfMessages = findViewById(R.id.layoutOfMessages);
-                layoutOfMessages.addView(contactMessage);
-                contactMessage.addView(messageBtn);
-                if(contactId.contains(messageId)){
-                    contactMessage.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
-                } else if(!contactId.contains(messageId)){
-                    contactMessage.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+                if(otherMessageId.toString().contains(otherContactId)){
+                    Button messageBtn = new Button(Chat.this);
+                    LinearLayout contactMessage = new LinearLayout(Chat.this);
+                    messageBtn.setText(text);
+                    LinearLayout layoutOfMessages = findViewById(R.id.layoutOfMessages);
+                    layoutOfMessages.addView(contactMessage);
+                    contactMessage.addView(messageBtn);
+                    if(contactId.contains(messageId)){
+                        contactMessage.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
+                    } else if(!contactId.contains(messageId)){
+                        contactMessage.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+                    }
                 }
+
             }
 
         } catch (Exception e) {
@@ -153,7 +160,10 @@ public class Chat  extends AppCompatActivity {
                 EditText messageText = findViewById(R.id.messageText);
 
                 try {
-                    String url = "https://messengerserv.herokuapp.com/contacts/messages/add/?contactid=" + contactId + "&othercontactid=" + otherContactId + "&message=" + messageText.getText().toString();
+
+//                    String url = "https://messengerserv.herokuapp.com/contacts/messages/add/?contactid=" + contactId + "&othercontactid=" + otherContactId + "&message=" + messageText.getText().toString();
+                    String url = "https://opalescent-soapy-baseball.glitch.me/contacts/messages/add/?contactid=" + contactId + "&othercontactid=" + otherContactId + "&message=" + messageText.getText().toString();
+
                     JSONObject responseJson = new FetchTask<JSONObject>().execute(url).get();
                     if(responseJson.getString("status").contains("OK")) {
                         Log.d("mytag", "cообщение отправлено");

@@ -63,8 +63,13 @@ public class FetchTask<ResponseType> extends AsyncTask<String, Integer, Response
             }
             JSONArray responseContacts = null;
             try {
+
+//                JSONObject obj = new JSONObject(responseJson);
+//                responseContacts = obj.getJSONArray("contacts");
+
                 JSONObject obj = new JSONObject(responseJson);
-                responseContacts = obj.getJSONArray("contacts");
+                transferJson = (ResponseType) obj.getJSONObject("contact");
+
             } catch(JSONException e) {
                 Log.d("mytag", "ошибка парсинга json");
             }

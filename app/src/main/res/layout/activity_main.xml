@@ -7,6 +7,19 @@
     tools:context=".MainActivity">
 
     <Button
+        android:id="@+id/info"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:text="\@"
+        android:translationX="-125dp"
+        android:translationY="250dp"
+        app:cornerRadius="35dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
         android:id="@+id/addContactBtn"
         android:layout_width="75dp"
         android:layout_height="75dp"

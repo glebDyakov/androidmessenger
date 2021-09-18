@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +14,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class Info  extends AppCompatActivity {
 
@@ -42,12 +46,31 @@ public class Info  extends AppCompatActivity {
 //            contactName.setText(extras.getString("contactName").toString());
 
         if(extras != null) {
+
+            String contactId = extras.getString("contactId");
+            String otherContactId = extras.getString("otherContactId");
+
+            Log.d("mytag", "otherContactId: " + otherContactId + " , cotactId: " + contactId);
+
             @SuppressLint("WrongConstant") SQLiteDatabase db = openOrCreateDatabase("contactio.db", SQLiteDatabase.CREATE_IF_NECESSARY, null);
-            Cursor selectedContact = db.rawQuery("Select * from sockets where _id = \"1\"", null);
-            selectedContact.moveToFirst();
-            String imgSrc = selectedContact.getString(3);
-            Log.d("mytag", imgSrc);
+//            Cursor selectedContact = db.rawQuery("Select * from sockets where _id = \"1\"", null);
+//            selectedContact.moveToFirst();
+//            String imgSrc = selectedContact.getString(3);
+//            Log.d("mytag", imgSrc);
             ImageView avatar = findViewById(R.id.avatar);
+            try {
+                String url = "https://messengerserv.herokuapp.com/contacts/get/?id=" + otherContactId;
+                JSONObject responseJson = new FetchTask<JSONObject>().execute(url).get();
+                TextView contactName = findViewById(R.id.contactName);
+                contactName.setText(responseJson.getString("name"));
+
+                Bitmap uploadedImg = new FetchTask<Bitmap>(avatar).execute("https://opalescent-soapy-baseball.glitch.me/contacts/getavatar/?contactid=1&path=abc").get();
+                avatar.setImageBitmap(uploadedImg);
+
+            } catch (Exception e){
+
+            }
+
 //            if(extras.getString("avatar").toString().contains("five")){
 //                avatar.setImageResource(R.drawable.five);
 //            } else if(extras.getString("avatar").toString().contains("camera")){
@@ -59,22 +82,29 @@ public class Info  extends AppCompatActivity {
 //            } else if(extras.getString("avatar").toString().contains("cross")){
 //                avatar.setImageResource(R.drawable.cross);
 //            }
-            TextView contactName = findViewById(R.id.contactName);
+
+//            TextView contactName = findViewById(R.id.contactName);
+
 //            contactName.setText(extras.getString("contactName").toString());
-            String id = extras.getString("contactId");
-            Log.d("mytag", id);
+
+//            String id = extras.getString("contactId");
+//            Log.d("mytag", id);
+
+            ImageButton imgPickBtn = findViewById(R.id.imgPickBtn);
+            if(!(otherContactId.contains(contactId))) {
+                imgPickBtn.setVisibility(View.INVISIBLE);
+            } else {
+                imgPickBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                        intent.setType("file/*");
+                        startActivityForResult(intent, 8778);
+                    }
+                });
+            }
 
         }
-
-        ImageButton imgPickBtn = findViewById(R.id.imgPickBtn);
-        imgPickBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("file/*");
-                startActivityForResult(intent, 8778);
-            }
-        });
 
     }
 

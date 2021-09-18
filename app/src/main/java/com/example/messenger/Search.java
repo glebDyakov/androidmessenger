@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import org.json.JSONArray;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,7 +59,9 @@ public class Search extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 EditText searchName = findViewById(R.id.searchName);
-                refreshContent(searchName.getText().toString());
+                if(searchName.getText().toString().length() >= 1) {
+                    refreshContent(searchName.getText().toString());
+                }
             }
         });
 
@@ -74,56 +77,70 @@ public class Search extends AppCompatActivity {
         JSONArray responseJson = null;
         try {
             responseJson = new FetchTask<JSONArray>().execute(url).get();
-            for (int i = 0; i < responseJson.length(); i++) {
-                String name = responseJson.getJSONObject(i).getString("name");
-                String avatar = responseJson.getJSONObject(i).getString("avatar");
-                String id = responseJson.getJSONObject(i).getString("_id");
-                if (name.toString().contains(keywords)) {
-                    ImageButton currentContactAvatar = new ImageButton(Search.this);
+            if(responseJson.length() >= 1) {
+                for (int i = 0; i < responseJson.length(); i++) {
+                    String name = responseJson.getJSONObject(i).getString("name");
+                    String avatar = responseJson.getJSONObject(i).getString("avatar");
+                    String id = responseJson.getJSONObject(i).getString("_id");
 
-                    Bitmap uploadedImg = new FetchTask<Bitmap>(currentContactAvatar).execute("https://opalescent-soapy-baseball.glitch.me/contacts/getavatar/?contactid=1&path=abc").get();
+                    Log.d("mytag", "otherContactId: " + id + " , contactId: " + contactId);
 
-                    currentContactAvatar.setLayoutParams(new ConstraintLayout.LayoutParams(115, 115));
-                    if (avatar.toString().contains("five")) {
-                        currentContactAvatar.setImageResource(R.drawable.five);
-                    } else if (avatar.toString().contains("barcode")) {
-                        currentContactAvatar.setImageResource(R.drawable.barcode);
-                    } else if (avatar.toString().contains("magnet")) {
-                        currentContactAvatar.setImageResource(R.drawable.magnet);
-                    } else if (avatar.toString().contains("camera")) {
-                        currentContactAvatar.setImageResource(R.drawable.camera);
-                    } else if (avatar.toString().contains("cross")) {
-                        currentContactAvatar.setImageResource(R.drawable.cross);
+                    if (name.toString().contains(keywords) && !(id.toString().contains(contactId.toString()))) {
+                        ImageButton currentContactAvatar = new ImageButton(Search.this);
+
+                        Bitmap uploadedImg = new FetchTask<Bitmap>(currentContactAvatar).execute("https://opalescent-soapy-baseball.glitch.me/contacts/getavatar/?contactid=1&path=abc").get();
+
+                        currentContactAvatar.setLayoutParams(new ConstraintLayout.LayoutParams(115, 115));
+                        if (avatar.toString().contains("five")) {
+                            currentContactAvatar.setImageResource(R.drawable.five);
+                        } else if (avatar.toString().contains("barcode")) {
+                            currentContactAvatar.setImageResource(R.drawable.barcode);
+                        } else if (avatar.toString().contains("magnet")) {
+                            currentContactAvatar.setImageResource(R.drawable.magnet);
+                        } else if (avatar.toString().contains("camera")) {
+                            currentContactAvatar.setImageResource(R.drawable.camera);
+                        } else if (avatar.toString().contains("cross")) {
+                            currentContactAvatar.setImageResource(R.drawable.cross);
+                        }
+                        TextView currentContactName = new TextView(Search.this);
+                        currentContactName.setText(name.toString());
+                        LinearLayout contactLayout = new LinearLayout(Search.this);
+                        ConstraintLayout.LayoutParams contactLayoutParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
+                        contactLayoutParams.setMargins(5, 75, 5, 75);
+                        contactLayout.setLayoutParams(contactLayoutParams);
+                        layoutOfContacts.addView(contactLayout);
+                        contactLayout.setOrientation(LinearLayout.HORIZONTAL);
+                        contactLayout.addView(currentContactAvatar);
+                        contactLayout.addView(currentContactName);
+                        contactLayout.setContentDescription(id.toString());
+                        contactLayout.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(Search.this, Chat.class);
+                                intent.putExtra("contactId", contactId);
+                                intent.putExtra("otherContactId", contactLayout.getContentDescription());
+                                Search.this.startActivity(intent);
+                            }
+                        });
+                        currentContactAvatar.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(Search.this, Info.class);
+
+//                                intent.putExtra("contactId", contactLayout.getContentDescription());
+                                intent.putExtra("contactId", contactId);
+                                intent.putExtra("otherContactId", contactLayout.getContentDescription());
+
+                                Search.this.startActivity(intent);
+                            }
+                        });
                     }
-                    TextView currentContactName = new TextView(Search.this);
-                    currentContactName.setText(name.toString());
-                    LinearLayout contactLayout = new LinearLayout(Search.this);
-                    ConstraintLayout.LayoutParams contactLayoutParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
-                    contactLayoutParams.setMargins(5, 75, 5, 75);
-                    contactLayout.setLayoutParams(contactLayoutParams);
-                    layoutOfContacts.addView(contactLayout);
-                    contactLayout.setOrientation(LinearLayout.HORIZONTAL);
-                    contactLayout.addView(currentContactAvatar);
-                    contactLayout.addView(currentContactName);
-                    contactLayout.setContentDescription(id.toString());
-                    contactLayout.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(Search.this, Chat.class);
-                            intent.putExtra("contactId", contactId);
-                            intent.putExtra("otherContactId", contactLayout.getContentDescription());
-                            Search.this.startActivity(intent);
-                        }
-                    });
-                    currentContactAvatar.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(Search.this, Info.class);
-                            intent.putExtra("contactId", contactLayout.getContentDescription());
-                            Search.this.startActivity(intent);
-                        }
-                    });
                 }
+            } else {
+                TextView notFoundContacts = new TextView(Search.this);
+                notFoundContacts.setText("Нет таких контактов");
+                layoutOfContacts.addView(notFoundContacts);
+
             }
         } catch(Exception e) {
             Log.d("mytag", "ошибка запроса: " + url + " " + e);
