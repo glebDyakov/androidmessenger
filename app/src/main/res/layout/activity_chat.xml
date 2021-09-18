@@ -5,10 +5,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <Spinner
+        android:id="@+id/advansedOptions"
+        android:layout_width="53dp"
+        android:layout_height="47dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginEnd="1dp"
+        android:spinnerMode="dropdown"
+        android:translationX="150dp"
+        android:translationY="-315dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:listitem="@layout/activity_main"
+        tools:visibility="visible" />
+
     <ScrollView
         android:id="@+id/scrollViewOfMessages"
-        android:layout_width="412dp"
-        android:layout_height="454dp"
+        android:layout_width="408dp"
+        android:layout_height="355dp"
+        android:translationY="75dp"
         app:layout_constraintBottom_toTopOf="@+id/messageText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -52,4 +70,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="TouchTargetSizeCheck" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

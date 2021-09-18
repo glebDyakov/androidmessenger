@@ -97,9 +97,15 @@ public class Info  extends AppCompatActivity {
                 imgPickBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                        intent.setType("file/*");
-                        startActivityForResult(intent, 8778);
+//                        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+//                        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+//                        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        intent.setType("image/*");
+//                        intent.setType("file/*");
+//                        startActivityForResult(intent, 8778);
+//                        startActivityForResult(intent, TFRequestCodes.GALLERY);
+                        startActivityForResult(Intent.createChooser(intent, "Select Picture"), 1);
                     }
                 });
             }

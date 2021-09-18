@@ -1,7 +1,11 @@
 package com.example.messenger;
 
 import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ContentUris;
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -10,6 +14,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -21,18 +26,20 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 public class Chat  extends AppCompatActivity {
 
+    public MediaPlayer audio;
     public String contactId = "";
     public String otherContactId = "";
-
     public SQLiteDatabase db;
     public ArrayList<HashMap<Object, String>> messages;
 
@@ -40,6 +47,8 @@ public class Chat  extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+
+        audio = MediaPlayer.create(getApplicationContext(), R.raw.sendmessagesnd);
 
         Bundle extras = getIntent().getExtras();
         if(extras != null){
@@ -49,7 +58,6 @@ public class Chat  extends AppCompatActivity {
 
             @SuppressLint("WrongConstant") SQLiteDatabase db = openOrCreateDatabase("contactio.db", SQLiteDatabase.CREATE_IF_NECESSARY, null);
 
-//            Cursor otherscontacts = db.rawQuery("Select * from otherscontacts where id = " + id, null);
             Cursor otherscontacts = db.rawQuery("Select * from otherscontacts", null);
 
             otherscontacts.moveToFirst();
@@ -72,59 +80,13 @@ public class Chat  extends AppCompatActivity {
                 db.execSQL("INSERT INTO \"otherscontacts\"(name, phone, avatar, id) VALUES (\"" + otherContactId + "\", \"" + otherContactId + "\", \"" + "empty" + "\", \"" + otherContactId + "\");");
             }
 
-//            if(otherscontacts == null) {
-//                db.execSQL("INSERT INTO \"otherscontacts\"(name, phone, avatar) VALUES (\"" + id + "\", \"" + id + "\", \"" + "empty" + "\");");
-//                Log.d("mytag", "Этот контакт ещё не прикреплён");
-//            } else if(otherscontacts != null){
-//                Log.d("mytag", "Этот контакт уже прикреплён");
-//            }
-
-//            messageText.setText(contactId);
-
             Log.d("mytag", "otherContactId: " + otherContactId);
         }
-
-        messages = new ArrayList<HashMap<Object, String>>();
-        HashMap<Object,String> newMessageOne = new HashMap<Object,String>();
-        newMessageOne.put("text", "abcdefghjkl");
-        newMessageOne.put("sender", "admin");
-        newMessageOne.put("isSender", "true");
-        messages.add(newMessageOne);
-        newMessageOne = new HashMap<Object,String>();
-        newMessageOne.put("text", "abcdefghjkl");
-        newMessageOne.put("sender", "admin");
-        newMessageOne.put("isSender", "false");
-        messages.add(newMessageOne);
-        newMessageOne = new HashMap<Object,String>();
-        newMessageOne.put("text", "abcdefghjkl");
-        newMessageOne.put("sender", "admin");
-        newMessageOne.put("isSender", "true");
-        messages.add(newMessageOne);
-
-//        for(HashMap<Object, String> message : messages){
-//            Button messageBtn = new Button(Chat.this);
-//            LinearLayout contactMessage = new LinearLayout(Chat.this);
-//            messageBtn.setText(message.get("text"));
-//            LinearLayout layoutOfMessages = findViewById(R.id.layoutOfMessages);
-//            layoutOfMessages.addView(contactMessage);
-//            contactMessage.addView(messageBtn);
-//            if(message.get("isSender").toString().contains("true")){
-//                contactMessage.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
-//            } else if(!message.get("isSender").toString().contains("true")){
-//                contactMessage.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
-//            }
-//        }
 
         try {
             String url = "https://messengerserv.herokuapp.com/contacts/get/?id=" + contactId;
 
-//            JSONObject responseJson = new FetchTask<JSONObject>().execute(url).get();
-
-//            JSONArray messagesJson = responseJson.getJSONArray("messages");
-//            JSONArray messagesJson = new FetchTask<JSONArray>().execute(url, "messages").get();
-
             JSONArray messagesJson = new FetchTask<JSONObject>().execute(url).get().getJSONArray("messages");
-//            JSONArray messagesJson = new FetchTask<JSONArray>().execute(url).get();
 
             for(int i = 0; i < messagesJson.length(); i++){
 
@@ -161,7 +123,6 @@ public class Chat  extends AppCompatActivity {
 
                 try {
 
-//                    String url = "https://messengerserv.herokuapp.com/contacts/messages/add/?contactid=" + contactId + "&othercontactid=" + otherContactId + "&message=" + messageText.getText().toString();
                     String url = "https://opalescent-soapy-baseball.glitch.me/contacts/messages/add/?contactid=" + contactId + "&othercontactid=" + otherContactId + "&message=" + messageText.getText().toString();
 
                     JSONObject responseJson = new FetchTask<JSONObject>().execute(url).get();
@@ -175,39 +136,41 @@ public class Chat  extends AppCompatActivity {
                 }
 
 
-                HashMap<Object,String> newMessage = new HashMap<Object,String>();
-                newMessage.put("text", messageText.getText().toString());
-                newMessage.put("sender", "admin");
-                newMessage.put("isSender", "true");
-                messages.add(newMessage);
-
                 Button messageBtn = new Button(Chat.this);
                 LinearLayout contactMessage = new LinearLayout(Chat.this);
-                messageBtn.setText(messages.get(messages.toArray().length - 1).get("text"));
+
+                messageBtn.setText(messageText.getText().toString());
+
                 LinearLayout layoutOfMessages = findViewById(R.id.layoutOfMessages);
                 layoutOfMessages.addView(contactMessage);
                 contactMessage.addView(messageBtn);
-                if(messages.get(messages.toArray().length - 1).get("isSender").toString().contains("true")){
-                    contactMessage.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
-                } else if(!messages.get(messages.toArray().length - 1).get("isSender").toString().contains("true")){
-                    contactMessage.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+
+                contactMessage.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
+
+                audio.start();
+
+                Intent intent = new Intent(Chat.this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                PendingIntent pendingIntent = PendingIntent.getActivity(Chat.this, 0, intent, 0);
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "CONTACTIO_CHANNEL_ID")
+                        .setSmallIcon(R.drawable.barcode)
+                        .setContentTitle(contactId)
+                        .setContentText(messageText.getText().toString())
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                        .setContentIntent(pendingIntent)
+                        .setAutoCancel(true);
+
+                int importance = NotificationManager.IMPORTANCE_DEFAULT;
+                NotificationChannel channel = null;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    channel = new NotificationChannel("CONTACTIO_CHANNEL_ID", "channel for transfer messages between sockets", importance);
+                    channel.setDescription("transfer messages between sockets");
+                    NotificationManager notificationManager = getSystemService(NotificationManager.class);
+                    notificationManager.createNotificationChannel(channel);
+                    notificationManager.notify((int) ((new Date(System.currentTimeMillis()).getTime() / 1000L) % Integer.MAX_VALUE) /* ID of notification */, builder.build());
                 }
 
-//                Uri myUri = nMediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-//                ; // initialize Uri here
-//                MediaPlayer mediaPlayer = new MediaPlayer();
-//                mediaPlayer.setAudioAttributes(
-//                        new AudioAttributes.Builder()
-//                                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-//                                .setUsage(AudioAttributes.USAGE_MEDIA)
-//                                .build()
-//                );
-//                mediaPlayer.setDataSource(getApplicationContext(), myUri);
-//                mediaPlayer.prepare();
-//                mediaPlayer.start();
-
-//                MediaPlayer playr = MediaPlayer.create(this,R.raw.showme);
-
+                messageText.setText("");
 
             }
         });

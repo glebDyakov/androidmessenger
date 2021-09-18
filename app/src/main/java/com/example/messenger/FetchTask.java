@@ -7,6 +7,8 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ImageView;
 
+import androidx.core.app.NotificationCompat;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -96,7 +98,15 @@ public class FetchTask<ResponseType> extends AsyncTask<String, Integer, Response
                 Log.d("mytag", "ошибка запроса: " + url + " " + e);
             }
             try {
+
+//                NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "CONTACTIO_CHANNEL_ID")
+//                        .setSmallIcon(R.drawable.barcode)
+//                        .setContentTitle("contactId")
+//                        .setContentText("messageText.getText().toString()")
+//                        .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
                 transferJson = (ResponseType) new JSONObject(responseJson);
+
             } catch (JSONException e) {
                 Log.d("mytag", "ошибка парсинга json, url: " + url[0]);
             }
