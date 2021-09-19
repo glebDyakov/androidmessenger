@@ -20,12 +20,20 @@ public class FetchTask<ResponseType> extends AsyncTask<String, Integer, Response
 
     public ImageView bmImage;
 
+    public byte[] byteData;
+    public String contactId;
+
     public FetchTask() {
 
     }
 
     public FetchTask(ImageView bmImage) {
         this.bmImage = bmImage;
+    }
+
+    public FetchTask(byte[] byteData, String contactId) {
+        this.byteData = byteData;
+        this.contactId = contactId;
     }
 
     @Override
@@ -92,7 +100,7 @@ public class FetchTask<ResponseType> extends AsyncTask<String, Integer, Response
 
         } else if(url[0].contains("/contacts/messages/add")) {
             try {
-                responseJson = UrlFetcher.getText(url[0]);
+                responseJson = UrlFetcher.getText(url[0], byteData, contactId, "post");
                 transferJson = (ResponseType) new JSONObject(responseJson);
             } catch (Exception e) {
                 Log.d("mytag", "ошибка запроса: " + url + " " + e);
@@ -107,6 +115,17 @@ public class FetchTask<ResponseType> extends AsyncTask<String, Integer, Response
 
                 transferJson = (ResponseType) new JSONObject(responseJson);
 
+            } catch (JSONException e) {
+                Log.d("mytag", "ошибка парсинга json, url: " + url[0]);
+            }
+        } else if(url[0].contains("/contacts/upload")) {
+            try {
+                responseJson = UrlFetcher.getText(url[0]);
+            } catch(Exception e) {
+                Log.d("mytag", "ошибка запроса: " + url + " " + e);
+            }
+            try {
+                transferJson = (ResponseType) new JSONObject(responseJson);
             } catch (JSONException e) {
                 Log.d("mytag", "ошибка парсинга json, url: " + url[0]);
             }

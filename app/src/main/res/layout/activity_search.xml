@@ -13,7 +13,6 @@
         android:contentDescription="keywords"
         android:ems="10"
         android:foregroundTint="#0F76E4"
-        android:hint="@string/searchNamePlaceholder"
         android:importantForAutofill="no"
         android:inputType="textPersonName"
         android:textColorHint="#121111"

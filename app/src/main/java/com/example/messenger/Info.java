@@ -6,21 +6,35 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.media.Image;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.FileUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 public class Info  extends AppCompatActivity {
 
     public SQLiteDatabase db;
+    public String otherContactId;
+    public String contactId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +61,8 @@ public class Info  extends AppCompatActivity {
 
         if(extras != null) {
 
-            String contactId = extras.getString("contactId");
-            String otherContactId = extras.getString("otherContactId");
+            contactId = extras.getString("contactId");
+            otherContactId = extras.getString("otherContactId");
 
             Log.d("mytag", "otherContactId: " + otherContactId + " , cotactId: " + contactId);
 
@@ -105,7 +119,12 @@ public class Info  extends AppCompatActivity {
 //                        intent.setType("file/*");
 //                        startActivityForResult(intent, 8778);
 //                        startActivityForResult(intent, TFRequestCodes.GALLERY);
+
+                        db.close();
+
                         startActivityForResult(Intent.createChooser(intent, "Select Picture"), 1);
+
+
                     }
                 });
             }
@@ -114,9 +133,44 @@ public class Info  extends AppCompatActivity {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         String Fpath = data.getDataString();
-        Log.d("mytag", "Путь до картинки: " + Fpath);
+        Log.d("mytag", "Путь до картинки: " + Fpath + ", requestCode: " + requestCode + ", resultCode: " + resultCode);
+
+        Path pathToAvatar = Paths.get(Fpath);
+
+//        File newAvatar = new File(Fpath);
+//        Path pathToAvatar = newAvatar.toPath();
+
+        byte[] byteData = new byte[0];
+        try {
+
+//            FileUtils
+            byteData = Files.readAllBytes(pathToAvatar);
+//            byteData = Files.readAllBytes(Fpath);
+
+//            ByteArrayOutputStream ous = null;
+//            InputStream ios = null;
+//            byte[] buffer = new byte[4096];
+//            ous = new ByteArrayOutputStream();
+//            ios = new FileInputStream(newAvatar);
+//            int read = 0;
+//            while ((read = ios.read(buffer)) != -1) {
+//                ous.write(buffer, 0, read);
+//            }
+
+            JSONObject responseJson = null;
+            String url = "https://opalescent-soapy-baseball.glitch.me/contacts/upload";
+//            try {
+//                responseJson = new FetchTask<JSONObject>(byteData, contactId).execute(url).get();
+//                Log.d("mytag", "status при отправке картинки: " + responseJson.getString("status"));
+//            } catch (Exception e){
+//                Log.d("mytag", "Ошибка парсинга json при отправке картинки");
+//            }
+        } catch (IOException e) {
+            Log.d("mytag", "Ошибка чтения байтов при отправке картинки");
+        }
         super.onActivityResult(requestCode, resultCode, data);
 
     }
